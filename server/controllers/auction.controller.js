@@ -28,6 +28,9 @@ export const getAuctions = async (req, res, next) => {
     // Filter by status
     if (status) {
       query.where.status = status;
+    } else {
+      // By default, only show active auctions
+      query.where.status = 'ACTIVE';
     }
 
     // Sort
@@ -35,7 +38,8 @@ export const getAuctions = async (req, res, next) => {
       const [field, order] = sort.split(':');
       query.orderBy[field] = order.toLowerCase() === 'desc' ? 'desc' : 'asc';
     } else {
-      query.orderBy.createdAt = 'desc';
+      // Default sort by end date ascending (ending soonest first)
+      query.orderBy.endDate = 'asc';
     }
 
     // Execute query
@@ -108,17 +112,38 @@ export const getAuction = async (req, res, next) => {
 // Create auction
 export const createAuction = async (req, res, next) => {
   try {
-    const { title, description, startPrice, imageUrl, startDate, endDate } = req.body;
+    const { title, description, imageUrl, startPrice, startDate, endDate } = req.body;
 
+    // Validate dates
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const now = new Date();
+
+    if (start < now) {
+      return res.status(400).json({
+        success: false,
+        message: 'Start date must be in the future'
+      });
+    }
+
+    if (end <= start) {
+      return res.status(400).json({
+        success: false,
+        message: 'End date must be after start date'
+      });
+    }
+
+    // Create auction
     const auction = await prisma.auction.create({
       data: {
         title,
         description,
-        startPrice,
-        currentPrice: startPrice,
         imageUrl,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        startPrice: parseFloat(startPrice),
+        currentPrice: parseFloat(startPrice),
+        startDate: start,
+        endDate: end,
+        status: start <= now ? 'ACTIVE' : 'PENDING',
         sellerId: req.user.id
       }
     });
@@ -126,105 +151,6 @@ export const createAuction = async (req, res, next) => {
     res.status(201).json({
       success: true,
       data: auction
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Update auction
-export const updateAuction = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { title, description, imageUrl, endDate, status } = req.body;
-
-    // Check if auction exists
-    let auction = await prisma.auction.findUnique({
-      where: { id }
-    });
-
-    if (!auction) {
-      return res.status(404).json({
-        success: false,
-        message: 'Auction not found'
-      });
-    }
-
-    // Check if user is owner
-    if (auction.sellerId !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to update this auction'
-      });
-    }
-
-    // Update auction
-    auction = await prisma.auction.update({
-      where: { id },
-      data: {
-        title: title || auction.title,
-        description: description || auction.description,
-        imageUrl: imageUrl || auction.imageUrl,
-        endDate: endDate ? new Date(endDate) : auction.endDate,
-        status: status || auction.status
-      }
-    });
-
-    res.status(200).json({
-      success: true,
-      data: auction
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Delete auction
-export const deleteAuction = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    // Check if auction exists
-    const auction = await prisma.auction.findUnique({
-      where: { id }
-    });
-
-    if (!auction) {
-      return res.status(404).json({
-        success: false,
-        message: 'Auction not found'
-      });
-    }
-
-    // Check if user is owner
-    if (auction.sellerId !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to delete this auction'
-      });
-    }
-
-    // Check if auction has bids
-    const bidsCount = await prisma.bid.count({
-      where: { auctionId: id }
-    });
-
-    if (bidsCount > 0) {
-      // If auction has bids, just mark it as cancelled
-      await prisma.auction.update({
-        where: { id },
-        data: { status: 'CANCELLED' }
-      });
-    } else {
-      // If no bids, delete the auction
-      await prisma.auction.delete({
-        where: { id }
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: 'Auction removed successfully'
     });
   } catch (error) {
     next(error);
