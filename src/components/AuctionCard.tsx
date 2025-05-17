@@ -29,16 +29,16 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction }) => {
     const diff = endDate.getTime() - now.getTime();
     
     if (diff <= 0) {
-      return 'Ended';
+      return 'Terminado';
     }
     
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     
     if (days > 0) {
-      return `${days}d ${hours}h left`;
+      return `${days}d ${hours}h restantes`;
     } else {
-      return `${hours}h left`;
+      return `${hours}h restantes`;
     }
   };
 
@@ -52,7 +52,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction }) => {
             className="w-full h-full object-cover"
           />
           <div className="absolute top-2 right-2">
-            <button className="p-1.5 bg-white bg-opacity-70 rounded-full hover:bg-opacity-100 text-gray-600 hover:text-red-500 transition-colors">
+            <button className="p-1.5 bg-white bg-opacity-70 rounded-full hover:bg-opacity-100 text-gray-600 hover:text-[#F97316] transition-colors">
               <Heart className="w-5 h-5" />
             </button>
           </div>
@@ -61,7 +61,7 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction }) => {
       
       <div className="p-4">
         <Link to={`/auctions/${auction.id}`} className="block">
-          <h3 className="font-semibold text-lg mb-1 hover:text-indigo-600 transition-colors">
+          <h3 className="font-semibold text-lg mb-1 hover:text-[#1D4ED8] transition-colors">
             {auction.title}
           </h3>
         </Link>
@@ -72,11 +72,11 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction }) => {
         
         <div className="flex justify-between items-center">
           <div>
-            <p className="font-bold text-lg text-indigo-700">${auction.currentPrice}</p>
-            <p className="text-xs text-gray-500">{auction.bidsCount} bids</p>
+            <p className="font-bold text-lg text-[#1D4ED8]">{auction.currentPrice}€</p>
+            <p className="text-xs text-gray-500">{auction.bidsCount} licitações</p>
           </div>
           
-          <div className="flex items-center text-sm bg-amber-50 text-amber-800 px-2 py-1 rounded">
+          <div className="flex items-center text-sm bg-amber-50 text-[#F97316] px-2 py-1 rounded">
             <Clock className="h-4 w-4 mr-1" />
             <span>{getTimeLeft(auction.endDate)}</span>
           </div>

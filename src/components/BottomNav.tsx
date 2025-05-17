@@ -14,44 +14,44 @@ const BottomNav: React.FC = () => {
       <div className="container mx-auto flex justify-around items-center">
         <Link 
           to="/" 
-          className={`flex flex-col items-center ${isActive('/') ? 'text-indigo-600' : 'text-gray-500'}`}
+          className={`flex flex-col items-center ${isActive('/') ? 'text-[#1D4ED8]' : 'text-gray-500'}`}
         >
           <Home className="w-6 h-6" />
-          <span className="text-xs mt-1">Home</span>
+          <span className="text-xs mt-1">Início</span>
         </Link>
         
         <Link 
           to="/auctions" 
-          className={`flex flex-col items-center ${isActive('/auctions') ? 'text-indigo-600' : 'text-gray-500'}`}
+          className={`flex flex-col items-center ${isActive('/auctions') ? 'text-[#1D4ED8]' : 'text-gray-500'}`}
         >
           <Search className="w-6 h-6" />
-          <span className="text-xs mt-1">Browse</span>
+          <span className="text-xs mt-1">Explorar</span>
         </Link>
         
         <Link 
           to="/create-auction" 
-          className={`flex flex-col items-center ${isActive('/create-auction') ? 'text-indigo-600' : 'text-gray-500'}`}
+          className={`flex flex-col items-center ${isActive('/create-auction') ? 'text-[#1D4ED8]' : 'text-gray-500'}`}
         >
-          <div className="bg-indigo-600 rounded-full p-1.5 -mt-6">
+          <div className="bg-[#F97316] rounded-full p-1.5 -mt-6">
             <PlusCircle className="w-6 h-6 text-white" />
           </div>
-          <span className="text-xs mt-1">Sell</span>
+          <span className="text-xs mt-1">Vender</span>
         </Link>
         
         <Link 
           to="/watchlist" 
-          className={`flex flex-col items-center ${isActive('/watchlist') ? 'text-indigo-600' : 'text-gray-500'}`}
+          className={`flex flex-col items-center ${isActive('/watchlist') ? 'text-[#1D4ED8]' : 'text-gray-500'}`}
         >
           <Heart className="w-6 h-6" />
-          <span className="text-xs mt-1">Watchlist</span>
+          <span className="text-xs mt-1">Favoritos</span>
         </Link>
         
         <Link 
           to="/profile" 
-          className={`flex flex-col items-center ${isActive('/profile') ? 'text-indigo-600' : 'text-gray-500'}`}
+          className={`flex flex-col items-center ${isActive('/profile') ? 'text-[#1D4ED8]' : 'text-gray-500'}`}
         >
           <User className="w-6 h-6" />
-          <span className="text-xs mt-1">Profile</span>
+          <span className="text-xs mt-1">Perfil</span>
         </Link>
       </div>
     </div>

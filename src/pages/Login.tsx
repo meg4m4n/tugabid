@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,10 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
+  const from = location.state?.from?.pathname || '/auctions';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,17 +26,10 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      // API call would go here in a real implementation
-      console.log('Logging in with:', formData);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect to auctions page after successful login
-      navigate('/auctions');
+      await login(formData.email, formData.password);
+      navigate(from, { replace: true });
     } catch (err) {
-      setError('Invalid email or password');
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'Failed to login');
     } finally {
       setLoading(false);
     }
